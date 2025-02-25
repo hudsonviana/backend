@@ -2,6 +2,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import employeeRoutes from './routes/employee.js'
 
 dotenv.config()
 
@@ -14,6 +15,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 app.use(bodyParser.json())
+app.use('/api/employee', employeeRoutes)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
