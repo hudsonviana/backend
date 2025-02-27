@@ -17,6 +17,10 @@ app.use(cors(corsOptions))
 app.use(bodyParser.json())
 app.use('/api/employee', employeeRoutes)
 
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not Found' })
+})
+
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500
   const message = err.message || 'Erro interno do servidor'

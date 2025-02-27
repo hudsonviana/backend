@@ -4,6 +4,9 @@ import {
   createRoleQuery,
   getAllEmployeeQuery,
   createEmployeeQuery,
+  getEmployeeQuery,
+  deleteEmployeeQuery,
+  updateEmployeeQuery,
 } from '../utils/sqlQuery.js'
 import { createError } from '../utils/error.js'
 
@@ -48,6 +51,58 @@ export async function createEmployee(req, res, next) {
 // https://www.youtube.com/watch?v=mk5EIPu21y0
 // PAREI EM 43:20
 
-export async function getEmployee(req, res) {}
-export async function deleteEmployee(req, res) {}
-export async function updateEmployee(req, res) {}
+export async function getEmployee(req, res, next) {
+  try {
+    const { id } = req.params
+
+    const data = await query(getEmployeeQuery, [id])
+
+    if (!data.rows.length) {
+      return next(createError(404, 'Empregado não encontrado'))
+    }
+
+    return res.json(data.rows[0])
+  } catch (error) {
+    return next(createError(500, error.message))
+  }
+}
+
+export async function deleteEmployee(req, res, next) {
+  try {
+    const { id } = req.params
+
+    const data = await query(deleteEmployeeQuery, [id])
+
+    if (!data.rowCount) {
+      return next(createError(404, 'Empregado não encontrado'))
+    }
+
+    return res.json({ message: 'Empregado deletado com sucesso' })
+  } catch (error) {
+    return next(createError(500, error.message))
+  }
+}
+
+export async function updateEmployee(req, res, next) {
+  try {
+    const { id } = req.params
+    const { name, email, age, role, salary } = req.body
+
+    const result = await query(updateEmployeeQuery, [
+      name,
+      email,
+      age,
+      role,
+      salary,
+      id,
+    ])
+
+    if (result.rowCount === 0) {
+      return next(createError(404, 'Empregado não encontrado'))
+    }
+
+    res.json(result.rows[0])
+  } catch (error) {
+    return next(createError(500, error.message))
+  }
+}
